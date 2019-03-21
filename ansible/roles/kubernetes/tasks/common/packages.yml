@@ -1,0 +1,5 @@
+- name: Install EPEL release
+  yum: name=epel-release state=latest
+
+- name: Install required packages
+  yum: name="net-tools,bridge-utils,ebtables,ethtool,lsof,wget,mc,bash-completion,ipvsadm" state=present

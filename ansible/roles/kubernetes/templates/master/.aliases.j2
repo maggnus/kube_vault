@@ -1,0 +1,8 @@
+
+alias k='kubectl'
+alias kget='kubectl get --all-namespaces -o wide'
+alias kall='clear && kubectl get --all-namespaces -o wide deploy,pods,svc,ep'
+alias kwatch='watch -n0.5 kubectl get --all-namespaces -o wide'
+alias kwatch_all='watch -n0.5 kubectl get --all-namespaces -o wide deploy,pods,svc,ep'
+alias helm='helm --tiller-namespace {{ helm_tiller_namespace }}'
+

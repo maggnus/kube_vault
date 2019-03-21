@@ -1,0 +1,9 @@
+- name: Install required packages
+  yum: name="kubeadm" state=present
+
+- name: Copy kubelet sysconfig settings
+  copy: src=etc/sysconfig/kubelet dest=/etc/sysconfig/kubelet
+  tags: kube-kubelet
+
+- name: Start and enable kubelet service
+  service: name=kubelet enabled=yes

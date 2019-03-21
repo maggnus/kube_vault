@@ -1,0 +1,19 @@
+- import_tasks: ../common/repo.yml
+
+- import_tasks: ../common/packages.yml
+
+- import_tasks: ../common/system.yml
+
+- import_tasks: ../common/swapoff.yml
+  tags: swapoff
+
+- import_tasks: ../common/kube.yml
+
+- import_tasks: ../common/status.yml
+
+- name: Join node to the Kubernetes cluster
+  import_tasks: join.yml
+  when: kubelet_up == false
+
+- import_tasks: ../common/net.yml
+  tags: net

@@ -1,0 +1,29 @@
+- name: Install weave net tool
+  get_url: url=http://git.io/weave dest=/usr/bin/weave mode=0755
+
+#- name: Check if file exists
+#  stat:
+#    path: /root/cni-plugins-amd64-v0.7.4.tgz
+#  register: r_cni_plugins
+
+#- name: Download and install net plugins
+#  get_url:
+#    url: https://github.com/containernetworking/plugins/releases/download/v0.7.4/cni-plugins-amd64-v0.7.4.tgz
+#    dest: /root
+#  when: r_cni_plugins.stat.exists == False
+
+#- name: Create folder if not exists
+#  file: path=/opt/cni/bin state=directory
+
+#- name: Extract cni plugins
+#  unarchive:
+#    src: /root/cni-plugins-amd64-v0.7.4.tgz
+#    dest: /opt/cni/bin
+#    remote_src: yes
+
+- name: Fix for 2.5.0 weave version (check if 2.5.1 exists)
+  command: iptables {{ item }}
+  with_items:
+    - "-D WEAVE-NPC -m physdev --physdev-out vethwe-bridge -j ACCEPT"
+    - "-A WEAVE-NPC -m physdev --physdev-is-bridged --physdev-out vethwe-bridge -j ACCEPT"
+  when: fix_net is defined

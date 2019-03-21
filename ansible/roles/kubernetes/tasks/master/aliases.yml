@@ -1,0 +1,10 @@
+- name: Copy init configuration
+  template: src=master/.aliases.j2 dest=/root/.aliases
+
+- name: Add aliases to bashrc
+  lineinfile: dest=/root/.bashrc
+    line=". /root/.aliases"
+    regexp='^. /root/.aliases$'
+    state=present
+    insertafter=EOF
+    create=True

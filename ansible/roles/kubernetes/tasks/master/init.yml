@@ -1,0 +1,26 @@
+- name: Define bootstrap host
+  set_fact:
+    master_bootstrap_host: "{{ groups['master'][0] }}"
+
+- block:
+    - name: Copy init configuration
+      template: src=kubernetes/kubeadm-config.yaml.j2 dest=/root/kubeadm-config.yaml
+      tags: kube-settings
+
+    - name: Init Kubernetes cluster
+      command: kubeadm init --config /root/kubeadm-config.yaml
+
+    - name: Create kube folder
+      file: path=/root/.kube state=directory owner=root
+
+    - name: Create symlink to kubectl config
+      file: src=/etc/kubernetes/admin.conf dest=/root/.kube/config state=link force=yes
+
+    - name: Create cluster overlay network
+      shell: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+      when: kubelet_up == false
+
+    - name: Annable schedule pods on the master nodes (TEMP)
+      shell: kubectl taint nodes --all node-role.kubernetes.io/master-
+
+  when: inventory_hostname == master_bootstrap_host and kubelet_up == false

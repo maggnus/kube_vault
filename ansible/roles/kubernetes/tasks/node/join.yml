@@ -1,0 +1,6 @@
+- debug: msg="kubeadm join {{ kube_apiserver_ip }}:{{ kube_apiserver_port }} --token {{ hostvars['k8s_host']['join_token'] }} --discovery-token-ca-cert-hash sha256:{{ hostvars['k8s_host']['ca_hash'] }}"
+  when: kubelet_up == false
+
+- name: Join Worker node to the Kubernetes cluster
+  command: kubeadm join {{ kube_apiserver_ip }}:{{ kube_apiserver_port }} --token {{ hostvars['k8s_host']['join_token'] }} --discovery-token-ca-cert-hash sha256:{{ hostvars['k8s_host']['ca_hash'] }}
+  when: kubelet_up == false

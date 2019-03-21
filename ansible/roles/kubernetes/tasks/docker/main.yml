@@ -1,0 +1,17 @@
+- name: Install kernel module
+  modprobe: name=br_netfilter state=present
+
+- name: Update sysctl settings
+  sysctl:
+      name: net.bridge.bridge-nf-call-iptables
+      value: 1
+      sysctl_set: yes
+      state: present
+      reload: yes
+
+- name: Install Docker packages
+  yum: name="docker" state=present
+
+- name: Start Docker service
+  service: name=docker state={{ docker_state | default('started') }} enabled=yes
+  tags: docker-service

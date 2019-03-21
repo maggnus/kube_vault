@@ -1,0 +1,31 @@
+- name: Install required packages
+  yum: name=ipvsadm state=present
+
+- name: Add the IPVS module
+  modprobe:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - ip_vs
+    - ip_vs_rr
+    - ip_vs_wrr
+    - ip_vs_sh
+
+- sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: Disable SELinux
+  selinux: state=disabled
+  register: r_selinux
+
+- name: Copy routing fix for VirtualBox deployment
+  copy: src=etc/sysconfig/network-scripts/route-eth1 dest=/etc/sysconfig/network-scripts/route-eth1
+  register: r_route
+
+- name: Reboot system with changes
+  reboot:
+  when: r_selinux.changed or r_route.changed

@@ -1,0 +1,41 @@
+
+- name: Define init host
+  set_fact:
+    master_bootstrap_host: "{{ groups['master'][0] }}"
+
+- name: Install unzip utility
+  yum: name="unzip,tar" state=present
+
+- name: Install Helm Kubernetes package manager
+  unarchive:
+    src: https://storage.googleapis.com/kubernetes-helm/helm-v2.13.0-linux-amd64.tar.gz
+    dest: /usr/bin
+    remote_src: yes
+    extra_opts: ['--strip-components=1', 'linux-amd64/helm']
+
+- name: Chek if tiller pods is running
+  shell: kubectl get pods --all-namespaces
+  register: r_get_pods
+  changed_when: false
+
+- block:
+
+  - name: Create Helm namespace
+    shell: kubectl create namespace {{ helm_tiller_namespace }}
+
+  - name: Create Helm service account
+    command: kubectl create serviceaccount --namespace {{ helm_tiller_namespace }} {{ helm_tiller_account }}
+
+  - name: Grant permission for Helm service account
+    command: kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount={{ helm_tiller_namespace }}:{{ helm_tiller_account }}
+
+  - name: Init Helm server Tiller
+    command: helm init --service-account {{ helm_tiller_account }} --tiller-namespace {{ helm_tiller_namespace }} --upgrade --wait
+    
+  - name: Helm add repository
+    command: helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
+
+  - name: Helm update chart cache
+    command: helm update
+
+  when: '"tiller" not in r_get_pods.stdout and inventory_hostname == master_bootstrap_host'

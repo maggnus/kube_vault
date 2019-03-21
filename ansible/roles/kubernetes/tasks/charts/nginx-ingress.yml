@@ -1,0 +1,17 @@
+
+- name: Define init host
+  set_fact:
+    master_bootstrap_host: "{{ groups['master'][0] }}"
+
+- name: Get installed packages
+  command: helm ls --all --tiller-namespace {{ helm_tiller_namespace }}
+  register: r_helm_ls
+  changed_when: false
+
+- block:
+
+  - name: Install nginx-ingress Helm chart
+    command: helm install --tiller-namespace {{ helm_tiller_namespace }} --name nginx-ingress --namespace nginx-ingress stable/nginx-ingress
+
+  when: '"nginx-ingress" not in r_helm_ls.stdout and inventory_hostname == master_bootstrap_host'
+

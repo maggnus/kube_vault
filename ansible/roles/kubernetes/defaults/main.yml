@@ -1,0 +1,10 @@
+kube_apiserver_ip: 172.17.8.100
+kube_apiserver_dns: 172.17.8.100
+kube_apiserver_port: 6443
+kube_kubelet_port: 10250
+
+helm_tiller_namespace: helm
+helm_tiller_account: tiller
+
+metallb_namespace: metallb
+metallb_ip_pool: 172.17.8.150-172.17.8.250

@@ -1,0 +1,31 @@
+- import_tasks: ../common/repo.yml
+
+- import_tasks: ../common/packages.yml
+
+- import_tasks: ../common/system.yml
+
+- import_tasks: ../common/swapoff.yml
+  tags: swapoff
+
+- import_tasks: ../common/kube.yml
+
+- import_tasks: ../common/status.yml
+
+#- import_tasks: firewall.yml
+#  tags: firewall
+
+#- import_tasks: ssh.yml
+
+#- import_tasks: etcd.yml
+
+- import_tasks: init.yml
+  tags: init
+
+- import_tasks: token.yml
+  tags: token
+
+- import_tasks: aliases.yml
+  tags: aliases
+
+- import_tasks: ../common/net.yml
+  tags: net

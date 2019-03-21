@@ -1,0 +1,28 @@
+- debug: msg="Generate join Token"
+  run_once: true
+
+- name: Define init host
+  set_fact:
+    master_bootstrap_host: "{{ groups['master'][0] }}"
+
+- block:
+    - name: Generate join token
+      shell: kubeadm token list | cut -d ' ' -f1 | sed -n '2p'
+      register: token_command
+      changed_when: false
+
+    - name: Calculate discovery token ce hash
+      shell: openssl x509 -in /etc/kubernetes/pki/ca.crt -noout -pubkey | openssl rsa -pubin -outform DER 2>/dev/null | sha256sum | cut -d' ' -f1
+      register: ca_hash_command
+      changed_when: false
+
+    - name: Add Kubernetes token and hash to dummy host
+      add_host:
+        name: "k8s_host"
+        join_token: "{{ token_command.stdout }}"
+        ca_hash: "{{ ca_hash_command.stdout }}"
+
+    - name: Join command dump
+      debug: msg="kubeadm join --token {{ hostvars['k8s_host']['join_token'] }}  {{ master_bootstrap_host }}:8443 --discovery-token-ca-cert-hash sha256:{{ hostvars['k8s_host']['ca_hash'] }} --experimental-control-plane"
+
+  when: inventory_hostname == master_bootstrap_host

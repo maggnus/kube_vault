@@ -1,0 +1,20 @@
+#- name: Enable firewalld port for apiserver
+#  firewalld:
+#    immediate: true
+#    port: "{{ kube_apiserver_port }}/tcp"
+#    permanent: true
+#    state: enabled
+#  ignore_errors: yes
+
+- name: Update iptable rules
+  iptables:
+    chain: INPUT
+    protocol: "{{ item.protocol }}"
+    destination_port: "{{ item.port }}"
+    jump: ACCEPT
+    #rule_num: 5
+  with_items:
+    - { protocol: tcp, port: 10250 }
+    - { protocol: tcp, port: 6783 }
+    - { protocol: udp, port: 6783 }
+    - { protocol: udp, port: 6784 }

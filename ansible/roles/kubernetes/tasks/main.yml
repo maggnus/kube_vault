@@ -1,0 +1,19 @@
+- name: Set up Docker on all Kubernetes nodes
+  import_tasks: docker/main.yml
+  when: inventory_hostname in groups['master'] or inventory_hostname in groups['node']
+  tags: kube-docker
+
+- name: Deploy Kubernetes Master nodes
+  import_tasks: master/main.yml
+  when: inventory_hostname in groups['master']
+  tags: kube-master
+
+- name: Deploy Kubernetes Worker nodes
+  import_tasks: node/main.yml
+  when: inventory_hostname in groups['node']
+  tags: kube-node
+
+- name: Deploy Kubernetes Helm charts
+  import_tasks: charts/main.yml
+  when: inventory_hostname in groups['master']
+  tags: kube-charts

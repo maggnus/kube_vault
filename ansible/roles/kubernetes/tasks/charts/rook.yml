@@ -1,0 +1,12 @@
+- name: Install Rook backend
+  shell: "kubectl apply  -f {{ item }}"
+  with_items:
+    - "https://raw.githubusercontent.com/rook/rook/master/cluster/examples/kubernetes/ceph/operator.yaml"
+    - "https://raw.githubusercontent.com/rook/rook/master/cluster/examples/kubernetes/ceph/cluster.yaml"
+    - "https://raw.githubusercontent.com/rook/rook/master/cluster/examples/kubernetes/ceph/storageclass.yaml"
+
+- name: Copy Rook storage class patch
+  template: src=charts/rook/rook-patch.sh.j2 dest=/root/rook-patch.sh mode=0755
+
+- name: Make Rook storage class as default
+  command: /root/rook-patch.sh

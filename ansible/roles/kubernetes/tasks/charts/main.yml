@@ -1,0 +1,14 @@
+- import_tasks: helm.yml
+
+- import_tasks: metallb.yml
+
+- import_tasks: nginx-ingress.yml
+
+- import_tasks: rook.yml
+  tags: rook
+
+- import_tasks: consul.yml
+  tags: consul
+
+- import_tasks: vault.yml
+  tags: vault

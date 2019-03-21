@@ -1,0 +1,17 @@
+- name: Add Kubernetes GPG keys
+  rpm_key: key={{ item }} state=present validate_certs=yes
+  with_items:
+      - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+      - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+- name: Add Kubernetes repo
+  yum_repository:
+      name: Kubernetes
+      description: Kubernetes YUM repo
+      baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+      gpgcheck: yes
+      enabled: yes
+      repo_gpgcheck: yes
+      gpgkey:
+          - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+          - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg

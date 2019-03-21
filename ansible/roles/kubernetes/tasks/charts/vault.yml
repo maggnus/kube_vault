@@ -1,0 +1,17 @@
+- name: Define init host
+  set_fact:
+    master_bootstrap_host: "{{ groups['master'][0] }}"
+
+- name: Get installed packages
+  command: helm ls --all --tiller-namespace {{ helm_tiller_namespace }}
+  register: r_helm_ls
+  changed_when: false
+
+- block:
+    - name: Install Helm repository
+      shell: helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
+
+    - name: Install Vault Helm chart
+      command: helm install --tiller-namespace {{ helm_tiller_namespace }} -n vault --namespace vault incubator/vault --set service.type="LoadBalancer",vault.config.storage.consul.address="consul-server.consul.svc.cluster.local:8500",vault.config.storage.consul.path="vault"
+
+  when: '"vault" not in r_helm_ls.stdout and inventory_hostname == master_bootstrap_host'
