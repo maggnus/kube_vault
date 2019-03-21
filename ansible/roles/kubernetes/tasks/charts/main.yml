@@ -1,6 +1,8 @@
 - import_tasks: helm.yml
+  tags: helm
 
 - import_tasks: metallb.yml
+  tags: metallb
 
 - import_tasks: nginx-ingress.yml
 

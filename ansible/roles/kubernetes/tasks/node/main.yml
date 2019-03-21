@@ -1,13 +1,17 @@
 - import_tasks: ../common/repo.yml
+  tags: repo
 
 - import_tasks: ../common/packages.yml
+  tags: packages
 
 - import_tasks: ../common/system.yml
+  tags: system
 
 - import_tasks: ../common/swapoff.yml
   tags: swapoff
 
 - import_tasks: ../common/kube.yml
+  tags: kube
 
 - import_tasks: ../common/status.yml
 
