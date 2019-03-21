@@ -17,9 +17,7 @@
 
 ## Deployment overview
 
-![Deployment](raw.githubusercontent.com/maggnus/cryptogen/blob/master/doc/k8s.png?raw=true)
-
-![Open WebApp](https://raw.githubusercontent.com/maggnus/marathon_cluster_vagrant/master/doc/images/04_port.png)
+Link: https://github.com/maggnus/cryptogen/blob/master/doc/k8s.png
 
 1. VirtualBox as virtualization platform for running virtual machines.
 
@@ -217,14 +215,3 @@ Cluster Name    vault-cluster-ce305a20
 Cluster ID      7aa03043-51c7-5bcb-5324-b9570cfe1231
 HA Enabled      false
 ```
-
-Create Token:
-
-```
-curl \
-    --header "X-Vault-Token: ..." \
-    --request POST \
-    --data @payload.json \
-    http://127.0.0.1:8200/v1/auth/token/create
-```
-
