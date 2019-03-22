@@ -185,8 +185,10 @@ vault   vault-vault  LoadBalancer  10.98.214.203   172.17.8.152  8200:30955/TCP 
 ```
 
 Consul UI: http://172.17.8.151
+![Consul](https://github.com/maggnus/cryptogen/blob/master/doc/consul.png)
 
 Vault UI: http://172.17.8.152:8200
+![Vault](https://github.com/maggnus/cryptogen/blob/master/doc/vault.png)
 
 Get Root Token for Vault access:
 
