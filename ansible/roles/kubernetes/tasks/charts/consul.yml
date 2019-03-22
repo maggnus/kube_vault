@@ -1,6 +1,6 @@
 - name: Define init host
   set_fact:
-      master_bootstrap_host: "{{ groups['master'][0] }}"
+    master_bootstrap_host: "{{ groups['master'][0] }}"
 
 - name: Get installed packages
   command: helm ls --all --tiller-namespace {{ helm_tiller_namespace }}
@@ -8,7 +8,7 @@
   changed_when: false
 
 - block:
-      - name: Install consul Helm chart
-        command: helm install --tiller-namespace {{ helm_tiller_namespace }} -n consul --namespace consul https://github.com/hashicorp/consul-helm/archive/v0.6.0.tar.gz --set ui.service.type=LoadBalancer,syncCatalog.enabled=true
+    - name: Install consul Helm chart
+      command: helm install --tiller-namespace {{ helm_tiller_namespace }} -n consul --namespace consul https://github.com/hashicorp/consul-helm/archive/v0.6.0.tar.gz --set ui.enabled=true,ui.service.type=LoadBalancer,syncCatalog.enabled=true
 
   when: '"consul" not in r_helm_ls.stdout and inventory_hostname == master_bootstrap_host'
