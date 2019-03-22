@@ -52,7 +52,6 @@ Clone project repository:
 
 ```console
 git clone https://github.com/maggnus/cryptogen.git
-cd marathon_cluster_vagrant
 ```
 
 Check configuration file `etc/cluster_config.yml`:
