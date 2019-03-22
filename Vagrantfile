@@ -12,20 +12,20 @@ cluster_config = YAML.load_file('etc/cluster_config.yml')
 servers = cluster_config["servers"]
 providers = cluster_config["providers"]
 
-# Check for missing plugins
-required_plugins = %w(vagrant-hostmanager vagrant-vbguest)
-plugin_installed = false
-required_plugins.each do |plugin|
-  unless Vagrant.has_plugin?(plugin)
-    system "vagrant plugin install #{plugin}"
-    plugin_installed = true
-  end
-end
+## Check for missing plugins
+#required_plugins = %w(vagrant-hostmanager vagrant-vbguest)
+#plugin_installed = false
+#required_plugins.each do |plugin|
+#  unless Vagrant.has_plugin?(plugin)
+#    system "vagrant plugin install #{plugin}"
+#    plugin_installed = true
+#  end
+#end
 
-# If new plugins installed, restart Vagrant process
-if plugin_installed === true
-  exec "vagrant #{ARGV.join' '}"
-end
+## If new plugins installed, restart Vagrant process
+#if plugin_installed === true
+#  exec "vagrant #{ARGV.join' '}"
+#end
 
 # Create boxes
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|

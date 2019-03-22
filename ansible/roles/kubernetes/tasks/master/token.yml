@@ -21,6 +21,7 @@
         name: "k8s_host"
         join_token: "{{ token_command.stdout }}"
         ca_hash: "{{ ca_hash_command.stdout }}"
+      with_items: "{{ groups['all'] }}"
 
     - name: Join command dump
       debug: msg="kubeadm join --token {{ hostvars['k8s_host']['join_token'] }}  {{ master_bootstrap_host }}:8443 --discovery-token-ca-cert-hash sha256:{{ hostvars['k8s_host']['ca_hash'] }} --experimental-control-plane"
