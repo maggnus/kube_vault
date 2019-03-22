@@ -17,7 +17,7 @@
 
 ## Deployment overview
 
-Link: https://github.com/maggnus/cryptogen/blob/master/doc/k8s.png
+![Deployment](https://github.com/maggnus/cryptogen/blob/master/doc/k8s.png)
 
 1. VirtualBox as virtualization platform for running virtual machines.
 
