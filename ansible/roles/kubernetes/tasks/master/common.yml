@@ -1,0 +1,28 @@
+- name: Copy init configuration
+  template: src=master/.aliases.j2 dest=/root/.aliases
+
+- name: Add aliases to bashrc
+  lineinfile: dest=/root/.bashrc
+      line=". /root/.aliases"
+      regexp='^. /root/.aliases$'
+      state=present
+      insertafter=EOF
+      create=True
+
+- name: Download cfssl tool
+  get_url:
+      url: https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
+      dest: /usr/bin/cfssl
+      mode: 0755
+
+- name: Download cfssljson tool
+  get_url:
+      url: https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
+      dest: /usr/bin/cfssljson
+      mode: 0755
+
+- name: Copy tls keys generation script
+  copy: src=master/tls-gen.sh dest=/root/tls-gen.sh mode=0755
+
+- name: Copy tls secrets generation script
+  copy: src=master/tls-secret.sh dest=/root/tls-secret.sh mode=0755

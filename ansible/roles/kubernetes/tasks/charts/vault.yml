@@ -7,11 +7,45 @@
   register: r_helm_ls
   changed_when: false
 
+- name: Get existed namespaces
+  command: kubectl get namespaces
+  register: r_ns_ls
+  changed_when: false
+
+- name: Get existed secret
+  command: kubectl get secret -n vault
+  register: r_vault_secrets
+
 - block:
+    - name: Create Vault namespace
+      command: kubectl create namespace vault
+      when: '"vault" not in r_ns_ls.stdout'
+
+    - name: Generate TLS secret for Vault
+      command: /root/tls-secret.sh
+      environment:
+        - KUBE_NAMESPACE: vault
+        - CERT_NAME: vault-tls
+      when: '"vault-tls" not in r_vault_secrets.stdout'
+
+    - name: Generate TLS secretes
+      command: /root/tls-gen.sh
+      environment:
+        - KUBE_NS: vault
+        - SERVER_SECRET: vault-server-tls
+        - CLIENT_SECRET: vault-client-tls
+        - SERVER_CERT: "tls.crt"
+        - SERVER_KEY: "tls.key"
+        - SAN_HOSTS: "127.0.0.1,vault.service.consul"
+      when: '"vault-server-tls" not in r_vault_secrets.stdout'
+
     - name: Install Helm repository
       shell: helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
 
-    - name: Install Vault Helm chart
-      command: helm install --tiller-namespace {{ helm_tiller_namespace }} -n vault --namespace vault incubator/vault --set service.type="LoadBalancer",vault.config.storage.consul.address="consul-server.consul.svc.cluster.local:8500",vault.config.storage.consul.path="vault"
+    - name: Copy configuration file for Vault Helm chart
+      template: src=charts/vault/values.yaml dest=/root/vault-values.yaml
 
+    - name: Install Vault Helm chart
+      command: helm install --tiller-namespace {{ helm_tiller_namespace }} -n vault --namespace vault incubator/vault -f /root/vault-values.yaml
+      #command: helm install --tiller-namespace {{ helm_tiller_namespace }} -n vault --namespace vault incubator/vault --set vault.dev=false --set vault.config.storage.consul.address="consul-server.consul:8500",vault.config.storage.consul.path="vault"
   when: '"vault" not in r_helm_ls.stdout and inventory_hostname == master_bootstrap_host'

@@ -32,7 +32,6 @@
    - Install Helm charts and other tools:
 
      - `Helm` - Kubernetes package menagement tool.
-
      - `MetalLB` - A network LB implementation for Kubernetes using standard routing protocols
      - `Rook` - File, Block, and Object Storage Services for your Cloud-Native Environments
      - `Consul` - Storage backend for `Vault` with persistent volumes on `Rook`
@@ -102,7 +101,7 @@ servers:
 Deploy virtual servers with `Vagrantfile`:
 
 ```console
-vagrant up
+vagrant up --provision
 ```
 
 Check if servers up and running:
@@ -172,8 +171,6 @@ rook-ceph         rook-ceph-osd-prepare-kube-master01-77zjd       0/2    Complet
 rook-ceph         rook-ceph-osd-prepare-kube-node01-8xj99         0/2    Completed
 rook-ceph         rook-ceph-osd-prepare-kube-node02-jxrxp         0/2    Completed
 vault             vault-vault-6975d5d8bb-5kt9n                    1/1    Running
-vault             vault-vault-6975d5d8bb-65hbq                    1/1    Running
-vault             vault-vault-6975d5d8bb-px6g6                    1/1    Running
 ```
 
 To get access to Vault and Consule UI run command:

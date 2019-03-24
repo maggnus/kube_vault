@@ -21,8 +21,8 @@
 - import_tasks: token.yml
   tags: token
 
-- import_tasks: aliases.yml
-  tags: aliases
+- import_tasks: common.yml
+  tags: common
 
 - import_tasks: ../common/net.yml
   tags: net

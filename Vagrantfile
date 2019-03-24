@@ -30,11 +30,17 @@ providers = cluster_config["providers"]
 # Create boxes
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.hostmanager.enabled = true
-  config.hostmanager.manage_host = true
-  config.hostmanager.manage_guest = true
-  config.hostmanager.ignore_private_ip = false
-  config.hostmanager.include_offline = true
+  if Vagrant.has_plugin?("vagrant-hostmanager")
+    config.hostmanager.enabled = true
+    config.hostmanager.manage_host = false
+    config.hostmanager.manage_guest = true
+    config.hostmanager.ignore_private_ip = false
+    config.hostmanager.include_offline = true
+  end
+
+  if Vagrant.has_plugin?("vagrant-vbguest")
+    config.vbguest.auto_update = false
+  end
 
   $ansible_groups = {}
 

@@ -7,8 +7,40 @@
   register: r_helm_ls
   changed_when: false
 
+- name: Get existed namespaces
+  command: kubectl get namespaces
+  register: r_ns_ls
+  changed_when: false
+
+- name: Get existed secret
+  command: kubectl get secret -n consul
+  register: r_consul_secrets
+
 - block:
-    - name: Install consul Helm chart
-      command: helm install --tiller-namespace {{ helm_tiller_namespace }} -n consul --namespace consul https://github.com/hashicorp/consul-helm/archive/v0.6.0.tar.gz --set ui.enabled=true,ui.service.type=LoadBalancer,syncCatalog.enabled=true
+    - name: Create Consul namespace
+      command: kubectl create namespace consul
+      when: '"consul" not in r_ns_ls.stdout'
+
+    - name: Generate TLS secret for Consul
+      command: /root/tls-secret.sh
+      environment:
+        - KUBE_NAMESPACE: consul
+        - CERT_NAME: consul-tls
+      when: '"consul-tls" not in r_consul_secrets.stdout'
+
+    - name: Generate TLS secretes
+      command: /root/tls-gen.sh
+      environment:
+        - KUBE_NS: consul
+        - SERVER_SECRET: consul-server-tls
+        - CLIENT_SECRET: consul-client-tls
+      when: '"consul-server-tls" not in r_consul_secrets.stdout'
+
+    - name: Copy configuration file for Consul Helm chart
+      template: src=charts/consul/values.yaml dest=/root/consul-values.yaml
+
+    - name: Install Consul Helm chart
+      command: helm install --tiller-namespace {{ helm_tiller_namespace }} -n consul --namespace consul https://github.com/hashicorp/consul-helm/archive/v0.6.0.tar.gz -f /root/consul-values.yaml
+      #command: helm install --tiller-namespace {{ helm_tiller_namespace }} -n consul --namespace consul https://github.com/hashicorp/consul-helm/archive/v0.6.0.tar.gz --set ui.enabled=true,ui.service.type=LoadBalancer,syncCatalog.enabled=true
 
   when: '"consul" not in r_helm_ls.stdout and inventory_hostname == master_bootstrap_host'
