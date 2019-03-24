@@ -17,25 +17,24 @@
 
 ## Deployment overview
 
+Deployment of KMS service was build on `VirtualBox` platform which provide ability to run mulitply virtual instances on local machine and create eviroment suitable for testing and experimenting.
+
+For this deployment was using some frameworks and tools:
+
+1. `Vagrant`  is an open-source software product for building and maintaining portable virtual software development environments.
+2. `Ansible`  is an open-source software provisioning, configuration management, and application deployment tool.
+3. `Kubernetes` is an open-source container orchestration system for automating application deployment, scaling, and management.
+4. `Helm` is a package management tool for Kubernetes cluster.
+5. `MetalLB` - A network LB implementation for Kubernetes using standard routing protocols.
+6. `Rook` - File, Block, and Object Storage Services for your Cloud-Native Environments.
+7. `Consul` - Storage backend for `Vault`.
+8. `Vault` - A tool for secrets management (KMS), encryption as a service, and privileged access management.
+
 ![Deployment](https://github.com/maggnus/cryptogen/blob/master/doc/k8s.png)
 
-1. VirtualBox as virtualization platform for running virtual machines.
+`Vault` KMS service require persistent storage backend for store encrypted and sensetive data which should be avaliable in HA mode. For this porpuse was using `Consul` tool which store data to the Kubernetes persistent volumes. Kubernetes support different type of storage classes and for this deployment was using `Rook` project which is based on`Ceph` distributed storage system.
 
-2. Vagrant as tool for management lifecycle of VMs. It spin up three Vms and execute Ansible playbook.
 
-3. Ansible playbook setting up Kubernetes cluster based on 3 VMs:
-
-   - Install Docker engine on all nodes
-
-   - Deploy 1 Master node and 2 Worker nodes.
-
-   - Install Helm charts and other tools:
-
-     - `Helm` - Kubernetes package menagement tool.
-     - `MetalLB` - A network LB implementation for Kubernetes using standard routing protocols
-     - `Rook` - File, Block, and Object Storage Services for your Cloud-Native Environments
-     - `Consul` - Storage backend for `Vault` with persistent volumes on `Rook`
-     - `Vault` - A tool for secrets management, encryption as a service, and privileged access management.
 
 ## Prerequisites
 
@@ -171,36 +170,66 @@ rook-ceph         rook-ceph-osd-prepare-kube-master01-77zjd       0/2    Complet
 rook-ceph         rook-ceph-osd-prepare-kube-node01-8xj99         0/2    Completed
 rook-ceph         rook-ceph-osd-prepare-kube-node02-jxrxp         0/2    Completed
 vault             vault-vault-6975d5d8bb-5kt9n                    1/1    Running
+vault             vault-vault-6975d5d8bb-65hbq                    1/1    Running
+vault             vault-vault-6975d5d8bb-px6g6                    1/1    Running
 ```
+
+
+
+# Consul UI access
 
 To get access to Vault and Consule UI run command:
 
 ```
-# kubectl get svc --all-namespaces | grep -E 'consul-ui|vault-vault' | column -t
+# kubectl get svc --all-namespaces | grep -E 'consul-ui' | column -t
 consul  consul-ui    LoadBalancer  10.107.231.153  172.17.8.151  80:30355/TCP    95m
-vault   vault-vault  LoadBalancer  10.98.214.203   172.17.8.152  8200:30955/TCP  58m
 ```
 
 Consul UI: http://172.17.8.151
 ![Consul](https://github.com/maggnus/cryptogen/blob/master/doc/consul.png)
 
-Vault UI: http://172.17.8.152:8200
-![Vault](https://github.com/maggnus/cryptogen/blob/master/doc/vault.png)
 
-Get Root Token for Vault access:
+
+# Vault initial configuration
+
+Check kubernetes services to get public IP and port for external access to `Vault` UI:
 
 ```
-# kubectl get pods -n vault | grep ^vault | awk '{print $1}' | head -1 | while read i; do kubectl logs -n vault $i; done | grep -E "^Unseal|^Root"
-Unseal Key: yXvOekmyJXTI/whU/Mz8d8FkkWvD1Dafzl37SKPevGM=
-Root Token: s.3xdlVRJ9MjmBOHChNM5qAZcR
+# kubectl get svc --all-namespaces | grep -E 'vault-vault' | column -t
+vault   vault-vault  LoadBalancer  10.98.214.203   172.17.8.152  8200:30955/TCP  58m
 ```
+
+1. Open `Vault` UI with url https://172.17.8.152:8200 and fill up the form.
+
+   ![Vault](https://github.com/maggnus/cryptogen/blob/master/doc/vault1.png)
+
+2. Store initial Root Token and Unseal Keys.
+
+   ![Vault](https://github.com/maggnus/cryptogen/blob/master/doc/vault2.png)
+
+3. Unseal `Vault` with master key
+
+   ![Vault](https://github.com/maggnus/cryptogen/blob/master/doc/vault3.png)
+
+4. Sing in to`Vault` with root key
+
+   ![Vault](https://github.com/maggnus/cryptogen/blob/master/doc/vault4.png)
+
+5. Done.
+
+   ![Vault](https://github.com/maggnus/cryptogen/blob/master/doc/vault5.png)
+
+
+
+# Vault console access
 
 Check that it works:
 
 ```
-# export VAULT_ADDR=http://172.17.8.152:8200
-# export VAULT_TOKEN=s.3xdlVRJ9MjmBOHChNM5qAZcR
-# vault status
+export VAULT_ADDR=https://172.17.8.152:8200
+export VAULT_TOKEN=s.JkV1FIDZWBytSFHySIf4jmBE
+vault status -tls-skip-verify
+
 Key             Value
 ---             -----
 Seal Type       shamir
@@ -209,7 +238,9 @@ Sealed          false
 Total Shares    1
 Threshold       1
 Version         1.0.1
-Cluster Name    vault-cluster-ce305a20
-Cluster ID      7aa03043-51c7-5bcb-5324-b9570cfe1231
-HA Enabled      false
+Cluster Name    vault-cluster-9a3140d3
+Cluster ID      2289c9df-f2e8-27e6-31cb-d2b84c74bb1e
+HA Enabled      true
+HA Cluster      https://10.32.0.9:8201
+HA Mode         active
 ```
