@@ -1,19 +1,4 @@
-# Cryptogen KMS service
-
-
-
-## Background
-
-*Cryptogen* i s a standalone web service with persistent storage. It exposes an API with the following verbs: 
-
-- `POST` by accepting input arguments from the request 
-- `GET` by returning: 
-  - "202 Async"
-  - "200 OK" reference with metadata to retrieve crypto assets by the requestor 
-
-*Cryptogen* communicates with KMS service for storing and obtaining crypto assets by KMS specific protocol. 
-
-
+# KMS on local Kubernetes cluster
 
 ## Deployment overview
 
@@ -30,9 +15,9 @@ For this deployment was using some frameworks and tools:
 7. `Consul` - Storage backend for `Vault`.
 8. `Vault` - A tool for secrets management (KMS), encryption as a service, and privileged access management.
 
-![Deployment](https://github.com/maggnus/cryptogen/blob/master/doc/k8s.png)
+![Deployment](https://github.com/maggnus/kube_vault/blob/master/doc/k8s.png)
 
-`Vault` KMS service require persistent storage backend for store encrypted and sensetive data which should be avaliable in HA mode. For this porpuse was using `Consul` tool which store data to the Kubernetes persistent volumes. Kubernetes support different type of storage classes and for this deployment was using `Rook` project which is based on`Ceph` distributed storage system.
+`Vault` KMS service require persistent storage backend for store encrypted and esnsetive data which should be available in HA mode. For this purpose was using `Consul` tool which store data to the Kubernetes persistent volumes. Kubernetes support different type of storage classes and for this deployment was using `Rook` project which is based on `Ceph` distributed storage system.
 
 
 
@@ -49,7 +34,7 @@ For this deployment was using some frameworks and tools:
 Clone project repository:
 
 ```console
-git clone https://github.com/maggnus/cryptogen.git
+git clone https://github.com/maggnus/kube_vault.git
 ```
 
 Check configuration file `etc/cluster_config.yml`:
@@ -186,7 +171,7 @@ consul  consul-ui    LoadBalancer  10.107.231.153  172.17.8.151  80:30355/TCP   
 ```
 
 Consul UI: http://172.17.8.151
-![Consul](https://github.com/maggnus/cryptogen/blob/master/doc/consul.png)
+![Consul](https://github.com/maggnus/kube_vault/blob/master/doc/consul.png)
 
 
 
@@ -201,23 +186,23 @@ vault   vault-vault  LoadBalancer  10.98.214.203   172.17.8.152  8200:30955/TCP 
 
 1. Open `Vault` UI with url https://172.17.8.152:8200 and fill up the form.
 
-   ![Vault](https://github.com/maggnus/cryptogen/blob/master/doc/vault1.png)
+   ![Vault](https://github.com/maggnus/kube_vault/blob/master/doc/vault1.png)
 
 2. Store initial Root Token and Unseal Keys.
 
-   ![Vault](https://github.com/maggnus/cryptogen/blob/master/doc/vault2.png)
+   ![Vault](https://github.com/maggnus/kube_vault/blob/master/doc/vault2.png)
 
 3. Unseal `Vault` with master key
 
-   ![Vault](https://github.com/maggnus/cryptogen/blob/master/doc/vault3.png)
+   ![Vault](https://github.com/maggnus/kube_vault/blob/master/doc/vault3.png)
 
 4. Sing in to`Vault` with root key
 
-   ![Vault](https://github.com/maggnus/cryptogen/blob/master/doc/vault4.png)
+   ![Vault](https://github.com/maggnus/kube_vault/blob/master/doc/vault4.png)
 
 5. Done.
 
-   ![Vault](https://github.com/maggnus/cryptogen/blob/master/doc/vault5.png)
+   ![Vault](https://github.com/maggnus/kube_vault/blob/master/doc/vault5.png)
 
 
 
