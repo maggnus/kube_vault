@@ -1,15 +1,15 @@
-# KMS on local Kubernetes cluster
+# KMS running on local Kubernetes cluster
 
-## Deployment overview
+## Deployment Overview
 
-Deployment of KMS service was build on `VirtualBox` platform which provide ability to run mulitply virtual instances on local machine and create eviroment suitable for testing and experimenting.
+Deployment of the KMS service was built on the `VirtualBox` platform which provide the ability to run multiple virtual instances on a local machine and create an environment suitable for testing and experimenting.
 
-For this deployment was using some frameworks and tools:
+This deployment uses some set of frameworks and tools:
 
 1. `Vagrant`  is an open-source software product for building and maintaining portable virtual software development environments.
 2. `Ansible`  is an open-source software provisioning, configuration management, and application deployment tool.
 3. `Kubernetes` is an open-source container orchestration system for automating application deployment, scaling, and management.
-4. `Helm` is a package management tool for Kubernetes cluster.
+4. `Helm` is a package management tool for the Kubernetes cluster.
 5. `MetalLB` - A network LB implementation for Kubernetes using standard routing protocols.
 6. `Rook` - File, Block, and Object Storage Services for your Cloud-Native Environments.
 7. `Consul` - Storage backend for `Vault`.
@@ -17,7 +17,7 @@ For this deployment was using some frameworks and tools:
 
 ![Deployment](https://github.com/maggnus/kube_vault/blob/master/doc/k8s.png)
 
-`Vault` KMS service require persistent storage backend for store encrypted and esnsetive data which should be available in HA mode. For this purpose was using `Consul` tool which store data to the Kubernetes persistent volumes. Kubernetes support different type of storage classes and for this deployment was using `Rook` project which is based on `Ceph` distributed storage system.
+`Vault` KMS service requires a persistent storage backend for storing encrypted and sensitive data which should be available in HA mode. For this purpose using `Consul` tool stores data to the Kubernetes persistent volumes. Kubernetes support different type of storage classes and for this deployment we are using the `Rook` project which is based on the `Ceph` distributed storage system.
 
 
 
@@ -26,8 +26,6 @@ For this deployment was using some frameworks and tools:
 1. Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) for setup virtual environment.
 2. Install [Vagrant](https://www.vagrantup.com/downloads.html) tool for deploy virtual servers.
 3. Install [Ansible](http://docs.ansible.com/ansible/intro_installation.html) for configure system (`brew install ansible`).
-
-
 
 ## Deploy virtual servers
 
